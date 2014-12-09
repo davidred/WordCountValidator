@@ -6,23 +6,32 @@ get '/' do
 
   text_file = files.sample
   source_text = File.read(text_file).strip
-  text_array = source_text.split
 
-  exclude = []
-  for i in ((text_array.length-5)...(text_array.length))
-    exclude << text_array[i]
-  end
+  exclude = create_exclude_list(source_text)
+
+  # for i in ((text_array.length-5)...(text_array.length))
+  #   exclude << text_array[i]
+  # end
 
   erb :"get.json", locals: { source_text: source_text, exclude: exclude }
 end
 
-def create_exclude_list(text)
+def get_uniqs(text)
   uniqs = text.split.map { |word| word.gsub(/[^a-zA-Z\s\']/,"")}.uniq
-  if uniqs.length == 1
-    return []
-  end
-  uniqs
+end
 
+def create_exclude_list(text)
+  exclude = []
+  uniqs = get_uniqs(text)
+  uniq_length = uniqs.length - 1
+  num_words = (uniq_length == 0) ? 0 : rand([uniq_length, 5].min) + 1
+
+  until exclude.length == num_words
+    word = uniqs.sample
+    exclude << word unless exclude.include?(word) #this would run faster if the word is deleted
+  end
+
+  exclude
 end
 ##Assumptions
 
