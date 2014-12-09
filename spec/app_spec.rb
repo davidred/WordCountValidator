@@ -24,14 +24,31 @@ describe 'The Word Counting App' do
       ])
     end
 
+    it "is case sensitive" do
+      expect(get_uniqs("Hey hey")).to eq(["Hey", "hey"])
+    end
+
     it "returns an empty array if there is only one unique word" do
       expect(create_exclude_list("Yo")).to eq([])
     end
 
-
   end
 
+  context "When validating a set of words it" do
 
+    it "returns true if the text is included in one of the files" do
+      expect(possible_text?("The quick brown fox jumped over the lazy dog.")).to eq(true)
+    end
+
+    it "returns false if the text is not included in one of the files" do
+      expect(possible_text?("lkaj dfASFDL KJVca slkvi")).to eq(false)
+    end
+
+    it "returns correct answer" do
+      expect(word_count("How now brown cow", ["now", "cow"])).to eq({'How' => 1, 'brown' => 1})
+    end
+
+  end
 
   context "When receiving a get request it" do
 
@@ -55,11 +72,29 @@ describe 'The Word Counting App' do
       expect(parsed_response['exclude']).to be_a(Array)
     end
 
-    it "returns an empty list if the text has only one unique word"
   end
 
-  context "When receiving a post request it" do
+  context "When receiving a correct response from the client it" do
+    it "returns 200" , :type => :request do
+      post '/', :response => {
+          :text => "The quick brown",
+          :exclude => ['quick'],
+          :answer => {'The' => 1, 'brown' => 1}
+        }
+      expect(last_response).to be_ok
+    end
+  end
 
+  context "when client returns incorrect response" do
+    it "returns 400 when response text is not one of the possible texts", :type => :request do
+      post '/', :response => {:text => "How now brown cow", :exclude => ['now', 'cow'], :answer => {:How => 2, :brown => 1}}
+      expect(last_response).not_to be_ok
+    end
+
+    it "returns 400 when answer contains the correct count, but does not exclude all words", :type => :request
+
+    it "returns 400 when answer excludes the right words, but does not count remaining words correctly"
+    it "returns 400 when answer is not case-sensitive"
   end
 
 
