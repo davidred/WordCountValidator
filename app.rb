@@ -16,7 +16,14 @@ get '/' do
   erb :"get.json", locals: { source_text: source_text, exclude: exclude }
 end
 
+def create_exclude_list(text)
+  uniqs = text.split.map { |word| word.gsub(/[^a-zA-Z\s\']/,"")}.uniq
+  if uniqs.length == 1
+    return []
+  end
+  uniqs
 
+end
 ##Assumptions
 
 #The exclude array should contain words randomly selected from the text
@@ -26,3 +33,5 @@ end
 #There should be less exclusion words than unique words in the text
 
 #Exclusion words should be unique and case-sensitive
+
+#Exclusion ignores punctuation

@@ -6,6 +6,29 @@ describe 'The Word Counting App' do
     Sinatra::Application
   end
 
+  context "When generating list of exlusion words it" do
+
+    it "generates a list of unique words" do
+      expect(create_exclude_list("hey hey there there there there")).to eq([
+        'hey',
+        'there',
+       ])
+    end
+
+    it "ignores punctuation" do
+      expect(create_exclude_list("Hey! Hey!!! You, You%$#$! I'm David")).to eq([
+        'Hey',
+        'You',
+        "I'm",
+        "David"
+      ])
+    end
+
+    it "returns an empty array if there is only one unique word" do
+      expect(create_exclude_list("Yo Yo")).to eq([])
+    end
+  end
+
 
 
   context "When receiving a get request it" do
