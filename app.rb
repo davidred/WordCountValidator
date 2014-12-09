@@ -15,3 +15,14 @@ get '/' do
 
   erb :"get.json", locals: { source_text: source_text, exclude: exclude }
 end
+
+
+##Assumptions
+
+#The exclude array should contain words randomly selected from the text
+
+#There should be a maximum of 5 exclusion words
+
+#There should be less exclusion words than unique words in the text
+
+#Exclusion words should be unique and case-sensitive
