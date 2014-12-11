@@ -1,5 +1,6 @@
 require 'sinatra'
 require "sinatra/reloader" if development?
+require 'json'
 
 get '/' do
   files = %w(texts/0 texts/1 texts/2 texts/3 texts/4 texts/5)
@@ -18,7 +19,6 @@ post '/' do
   answer = params[:response][:answer]
   answer.each{|k,v| answer[k] = v.to_i}
 
-  return 400 unless possible_text?(source_text)
   answer == word_count(source_text, exclude) ? 200 : 400
 end
 

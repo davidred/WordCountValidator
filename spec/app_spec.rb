@@ -74,27 +74,45 @@ describe 'The Word Counting App' do
 
   end
 
-  context "When receiving a correct response from the client it" do
-    it "returns 200" , :type => :request do
+  context "When receiving a response from the client it" do
+    it "returns 200 if the response is correct" , :type => :request do
       post '/', :response => {
-          :text => "The quick brown",
-          :exclude => ['quick'],
-          :answer => {'The' => 1, 'brown' => 1}
-        }
+        :text => "The quick brown",
+        :exclude => ['quick'],
+        :answer => {'The' => 1, 'brown' => 1}
+      }
       expect(last_response).to be_ok
     end
-  end
 
-  context "when client returns incorrect response" do
-    it "returns 400 when response text is not one of the possible texts", :type => :request do
+    it "prevents cheating and returns 400 when response text is not one of the possible texts", :type => :request do
       post '/', :response => {:text => "How now brown cow", :exclude => ['now', 'cow'], :answer => {:How => 2, :brown => 1}}
       expect(last_response).not_to be_ok
     end
 
-    it "returns 400 when answer contains the correct count, but does not exclude all words", :type => :request
+    it "returns 400 when answer excludes the right words, but does not count remaining words correctly" do
+      post '/', :response => {
+        :text => "The quick brown",
+        :exclude => ['quick'],
+        :answer => {'The' => 2, 'brown' => 1}
+      }
+    end
 
-    it "returns 400 when answer excludes the right words, but does not count remaining words correctly"
-    it "returns 400 when answer is not case-sensitive"
+    it "returns 400 when answer counts the words correctly, but does not exclude all the words" do
+      post '/', :response => {
+        :text => "The quick brown",
+        :exclude => ['quick'],
+        :answer => {'The' => 1, 'quick' => 1, 'brown' => 1}
+      }
+    end
+
+    it "returns 400 when answer is not case-sensitive" do
+      post '/', :response => {
+        :text => "The quick brown",
+        :exclude => ['quick'],
+        :answer => {'the' => 1, 'brown' => 1}
+      }
+    end
+
   end
 
 
