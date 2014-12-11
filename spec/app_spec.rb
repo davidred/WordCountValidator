@@ -1,5 +1,6 @@
 require "./spec/spec_helper"
 require "json"
+require_relative "../app"
 
 describe 'The Word Counting App' do
   def app
@@ -86,7 +87,7 @@ describe 'The Word Counting App' do
 
     it "prevents cheating and returns 400 when response text is not one of the possible texts", :type => :request do
       post '/', :response => {:text => "How now brown cow", :exclude => ['now', 'cow'], :answer => {:How => 2, :brown => 1}}
-      expect(last_response).not_to be_ok
+      expect(last_response.status).to eq(400)
     end
 
     it "returns 400 when answer excludes the right words, but does not count remaining words correctly" do
@@ -95,6 +96,7 @@ describe 'The Word Counting App' do
         :exclude => ['quick'],
         :answer => {'The' => 2, 'brown' => 1}
       }
+      expect(last_response.status).to eq(400)
     end
 
     it "returns 400 when answer counts the words correctly, but does not exclude all the words" do
@@ -103,6 +105,7 @@ describe 'The Word Counting App' do
         :exclude => ['quick'],
         :answer => {'The' => 1, 'quick' => 1, 'brown' => 1}
       }
+      expect(last_response.status).to eq(400)
     end
 
     it "returns 400 when answer is not case-sensitive" do
@@ -111,6 +114,7 @@ describe 'The Word Counting App' do
         :exclude => ['quick'],
         :answer => {'the' => 1, 'brown' => 1}
       }
+      expect(last_response.status).to eq(400)
     end
 
   end
